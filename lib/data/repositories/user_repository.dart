@@ -52,7 +52,6 @@ class UserRepository {
   Future<User> getUserProfile() async {
     final response = await _apiClient.api.get("/auth/login/profile");
     if (response.statusCode == 200) {
-      print(response.data);
       return User.fromJson(response.data);
     } else {
       throw Exception("Failed to load user");

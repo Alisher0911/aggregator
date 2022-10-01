@@ -15,9 +15,7 @@ class ApiClient {
             options.path = baseUrl + options.path;
           }
           if (options.path != "$baseUrl/auth/login" || !options.path.contains("registration")){
-            print("Path - ${options.path}");
             final token = await _storage.read(key: "accessToken");
-            print("Access token - $token");
             options.headers['Authorization'] = 'Bearer $token';
           }
           return handler.next(options);
@@ -47,13 +45,10 @@ class ApiClient {
 
   Future<void> refreshToken() async {
     final refreshToken = await _storage.read(key: 'refreshToken');
-    print("Refresh token - $refreshToken");
     final response = await api.post("/auth/login/refresh", data: { 'refreshToken' : refreshToken });
     if (response.statusCode == 200) {
       final newAccessToken = Tokens.fromJson(response.data["tokens"]).accessToken;
       final newRefreshToken = Tokens.fromJson(response.data["tokens"]).refreshToken;
-      print("New access token - $newAccessToken");
-      print("New refresh token - $newRefreshToken");
       await _storage.write(key: "accessToken", value: newAccessToken);
       await _storage.write(key: "refreshToken", value: newRefreshToken);
     } else {

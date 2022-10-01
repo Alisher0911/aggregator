@@ -7,14 +7,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class RestaurantCard extends StatelessWidget {
+class RestaurantCard extends StatefulWidget {
   final Restaurant restaurant;
 
   const RestaurantCard({
     super.key,
-    required this.restaurant
+    required this.restaurant,
   });
 
+  @override
+  State<RestaurantCard> createState() => _RestaurantCardState();
+}
+
+class _RestaurantCardState extends State<RestaurantCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -27,7 +32,7 @@ class RestaurantCard extends StatelessWidget {
         onTap: () {
           Navigator.push(
             context, 
-            RestaurantDetailsScreen.route(id: restaurant.id, restaurantCubit: context.read<RestaurantCubit>())
+            RestaurantDetailsScreen.route(id: widget.restaurant.id, restaurantCubit: context.read<RestaurantCubit>())
           );
         },
         child: Column(
@@ -38,8 +43,8 @@ class RestaurantCard extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(6),
                 image: DecorationImage(
-                  image: restaurant.images.isNotEmpty 
-                            ? NetworkImage(restaurant.images[0].url) as ImageProvider
+                  image: widget.restaurant.images.isNotEmpty 
+                            ? NetworkImage(widget.restaurant.images[0].url) as ImageProvider
                             : const AssetImage("assets/default/restaurant.png"),
                   fit: BoxFit.cover
                 )
@@ -51,7 +56,7 @@ class RestaurantCard extends StatelessWidget {
               child: ListTile(
                 contentPadding: EdgeInsets.zero,
                 title: Text(
-                  restaurant.title,
+                  widget.restaurant.title,
                   style: GoogleFonts.manrope(
                     textStyle: const TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.w700)
                   ),
@@ -60,7 +65,7 @@ class RestaurantCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      restaurant.description,
+                      widget.restaurant.description,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.manrope(
@@ -68,7 +73,7 @@ class RestaurantCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      restaurant.coords.addressName,
+                      widget.restaurant.coords.addressName,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.manrope(
@@ -82,22 +87,19 @@ class RestaurantCard extends StatelessWidget {
                   children: [
                     IconButton(
                       onPressed: () {
-                        if (restaurant.isFavourite) {
-                          context.read<RestaurantCubit>().deleteLike(restaurant).then((value) {
+                        if (widget.restaurant.isFavourite) {
+                          context.read<RestaurantCubit>().deleteLike(widget.restaurant).then((value) {
                             context.read<FavouriteCubit>().update();
                           });
                           
                         } else {
-                          context.read<RestaurantCubit>().addToFavourite(restaurant).then((value) {
+                          context.read<RestaurantCubit>().addToFavourite(widget.restaurant).then((value) {
                             context.read<FavouriteCubit>().update();
-                          });
-                          
+                          }); 
                         }
-                            
-                            
                       },
                       iconSize: 25,
-                      icon: restaurant.isFavourite 
+                      icon: widget.restaurant.isFavourite 
                               ? const Icon(
                                 Icons.favorite,
                                 color: Colors.red,

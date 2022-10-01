@@ -1,5 +1,7 @@
 import 'package:aggregator/consts/colors.dart';
+import 'package:aggregator/cubits/restaurant/restaurant_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class SearchBox extends StatelessWidget {
@@ -16,6 +18,9 @@ class SearchBox extends StatelessWidget {
   Widget build(BuildContext context) {
 
     return TextFormField(
+      onChanged: (value) {
+        context.read<RestaurantCubit>().getSearchResults(value);
+      },
       autofocus: true,
       focusNode: focusNode,
       controller: searchController,

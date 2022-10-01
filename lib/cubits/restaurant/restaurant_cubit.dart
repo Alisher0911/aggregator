@@ -22,6 +22,20 @@ class RestaurantCubit extends Cubit<RestaurantState> {
     }
   }
 
+  void getSearchResults(String searchText) {
+    if (searchText == "") {
+      emit(state.copyWith(searchResults: []));
+      return;
+    }
+
+    emit(state.copyWith(searchText: searchText));
+
+    final searchResults = state.restaurants.where(
+      (restaurant) => restaurant.title.toLowerCase().contains(state.searchText.toLowerCase())
+    ).toList();
+
+    emit(state.copyWith(searchResults: searchResults));
+  }
 
   Future<void> addToFavourite(Restaurant restaurant) async {
     try {
@@ -29,8 +43,12 @@ class RestaurantCubit extends Cubit<RestaurantState> {
       final updatedList = state.restaurants.map(
           (r) => r.id == restaurant.id ? r.copyWith(isFavourite: !restaurant.isFavourite) : r
         ).toList();
+      final updatedSearchList = state.searchResults.map(
+          (r) => r.id == restaurant.id ? r.copyWith(isFavourite: !restaurant.isFavourite) : r
+        ).toList();
       emit(state.copyWith(
-        restaurants: updatedList
+        restaurants: updatedList,
+        searchResults: updatedSearchList
       ));
     } catch (_) {}
   }
@@ -42,8 +60,12 @@ class RestaurantCubit extends Cubit<RestaurantState> {
       final updatedList = state.restaurants.map(
           (r) => r.id == restaurant.id ? restaurant.copyWith(isFavourite: !restaurant.isFavourite) : r
         ).toList();
+      final updatedSearchList = state.searchResults.map(
+          (r) => r.id == restaurant.id ? r.copyWith(isFavourite: !restaurant.isFavourite) : r
+        ).toList();
       emit(state.copyWith(
-        restaurants: updatedList
+        restaurants: updatedList,
+        searchResults: updatedSearchList
       ));
     } catch (_) {}
   }
@@ -52,7 +74,10 @@ class RestaurantCubit extends Cubit<RestaurantState> {
   Future<void> update() async {
     try {
       final restaurants = await _restaurantRepository.getAllRestaurants();
-      emit(state.copyWith(restaurants: restaurants));
+      final searchResults = restaurants.where(
+        (restaurant) => restaurant.title.toLowerCase().contains(state.searchText.toLowerCase())
+      ).toList();
+      emit(state.copyWith(restaurants: restaurants, searchResults: searchResults));
     } catch (_) {}
   }
 }
